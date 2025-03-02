@@ -4,6 +4,12 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import type { CalculatorData } from '@/types/calculator';
 
+// Значения по умолчанию для полей ввода
+const DEFAULT_VALUES = {
+  currentWeight: 97.3,
+  targetWeight: 90,
+};
+
 interface ProgressTabProps {
   data: CalculatorData;
 }
@@ -33,7 +39,13 @@ const ProgressTab: React.FC<ProgressTabProps> = ({ data }) => {
               <LineChart data={trajectoryData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="week" tick={{fontSize: 11}} />
-                <YAxis domain={[targetWeight - 1, currentWeight + 1]} tick={{fontSize: 11}} />
+                <YAxis 
+                  domain={[
+                    (targetWeight ?? DEFAULT_VALUES.targetWeight) - 1, 
+                    (currentWeight ?? DEFAULT_VALUES.currentWeight) + 1
+                  ]} 
+                  tick={{fontSize: 11}} 
+                />
                 <Tooltip />
                 <Legend wrapperStyle={{fontSize: 11}} />
                 <Line 
