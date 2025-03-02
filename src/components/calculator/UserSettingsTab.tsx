@@ -23,8 +23,14 @@ const DEFAULT_VALUES = {
 };
 
 const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
-  // Состояние для отслеживания, находится ли поле в фокусе
-  const [focusedField, setFocusedField] = useState<string | null>(null);
+  // Локальные состояния для контроля ввода
+  const [localInputs, setLocalInputs] = useState({
+    currentWeight: '',
+    targetWeight: '',
+    height: '',
+    age: '',
+    bodyFat: ''
+  });
   
   const {
     gender, setGender,
@@ -37,11 +43,16 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
     dietType, setDietType,
   } = data;
 
-  // Определяем, что показывать в поле ввода
-  const getDisplayValue = (field: string, value: number | null) => {
-    if (focusedField === field) return '';
-    return value !== null ? value : '';
-  };
+  // Инициализация локальных значений при монтировании и изменении значений
+  React.useEffect(() => {
+    setLocalInputs({
+      currentWeight: currentWeight !== null ? currentWeight.toString() : '',
+      targetWeight: targetWeight !== null ? targetWeight.toString() : '',
+      height: height !== null ? height.toString() : '',
+      age: age !== null ? age.toString() : '',
+      bodyFat: bodyFatPercentage !== null ? bodyFatPercentage.toString() : ''
+    });
+  }, [currentWeight, targetWeight, height, age, bodyFatPercentage]);
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -70,16 +81,19 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="current-weight"
             type="number"
-            value={getDisplayValue('current-weight', currentWeight)}
+            value={localInputs.currentWeight}
             onChange={(e) => {
               const value = e.target.value;
-              setCurrentWeight(value === '' ? null : parseFloat(value));
+              setLocalInputs(prev => ({ ...prev, currentWeight: value }));
+              setCurrentWeight(value === '' ? null : Number(value));
             }}
-            onFocus={() => setFocusedField('current-weight')}
             onBlur={() => {
-              setFocusedField(null);
               if (currentWeight === null) {
                 setCurrentWeight(DEFAULT_VALUES.currentWeight);
+                setLocalInputs(prev => ({ 
+                  ...prev, 
+                  currentWeight: DEFAULT_VALUES.currentWeight.toString() 
+                }));
               }
             }}
           />
@@ -90,16 +104,19 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="target-weight"
             type="number"
-            value={getDisplayValue('target-weight', targetWeight)}
+            value={localInputs.targetWeight}
             onChange={(e) => {
               const value = e.target.value;
-              setTargetWeight(value === '' ? null : parseFloat(value));
+              setLocalInputs(prev => ({ ...prev, targetWeight: value }));
+              setTargetWeight(value === '' ? null : Number(value));
             }}
-            onFocus={() => setFocusedField('target-weight')}
             onBlur={() => {
-              setFocusedField(null);
               if (targetWeight === null) {
                 setTargetWeight(DEFAULT_VALUES.targetWeight);
+                setLocalInputs(prev => ({ 
+                  ...prev, 
+                  targetWeight: DEFAULT_VALUES.targetWeight.toString() 
+                }));
               }
             }}
           />
@@ -110,16 +127,19 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="height"
             type="number"
-            value={getDisplayValue('height', height)}
+            value={localInputs.height}
             onChange={(e) => {
               const value = e.target.value;
-              setHeight(value === '' ? null : parseFloat(value));
+              setLocalInputs(prev => ({ ...prev, height: value }));
+              setHeight(value === '' ? null : Number(value));
             }}
-            onFocus={() => setFocusedField('height')}
             onBlur={() => {
-              setFocusedField(null);
               if (height === null) {
                 setHeight(DEFAULT_VALUES.height);
+                setLocalInputs(prev => ({ 
+                  ...prev, 
+                  height: DEFAULT_VALUES.height.toString() 
+                }));
               }
             }}
           />
@@ -130,16 +150,19 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="age"
             type="number"
-            value={getDisplayValue('age', age)}
+            value={localInputs.age}
             onChange={(e) => {
               const value = e.target.value;
-              setAge(value === '' ? null : parseInt(value));
+              setLocalInputs(prev => ({ ...prev, age: value }));
+              setAge(value === '' ? null : Number(value));
             }}
-            onFocus={() => setFocusedField('age')}
             onBlur={() => {
-              setFocusedField(null);
               if (age === null) {
                 setAge(DEFAULT_VALUES.age);
+                setLocalInputs(prev => ({ 
+                  ...prev, 
+                  age: DEFAULT_VALUES.age.toString() 
+                }));
               }
             }}
           />
@@ -150,16 +173,19 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="body-fat"
             type="number"
-            value={getDisplayValue('body-fat', bodyFatPercentage)}
+            value={localInputs.bodyFat}
             onChange={(e) => {
               const value = e.target.value;
-              setBodyFatPercentage(value === '' ? null : parseFloat(value));
+              setLocalInputs(prev => ({ ...prev, bodyFat: value }));
+              setBodyFatPercentage(value === '' ? null : Number(value));
             }}
-            onFocus={() => setFocusedField('body-fat')}
             onBlur={() => {
-              setFocusedField(null);
               if (bodyFatPercentage === null) {
                 setBodyFatPercentage(DEFAULT_VALUES.bodyFatPercentage);
+                setLocalInputs(prev => ({ 
+                  ...prev, 
+                  bodyFat: DEFAULT_VALUES.bodyFatPercentage.toString() 
+                }));
               }
             }}
           />
