@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,7 +13,19 @@ interface UserSettingsTabProps {
   data: CalculatorData;
 }
 
+// Значения по умолчанию для полей ввода
+const DEFAULT_VALUES = {
+  currentWeight: 97.3,
+  targetWeight: 90,
+  height: 189,
+  age: 32,
+  bodyFatPercentage: 29.0
+};
+
 const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
+  // Состояние для отслеживания, находится ли поле в фокусе
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  
   const {
     gender, setGender,
     currentWeight, setCurrentWeight,
@@ -24,6 +36,12 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
     activityLevel, setActivityLevel,
     dietType, setDietType,
   } = data;
+
+  // Определяем, что показывать в поле ввода
+  const getDisplayValue = (field: string, value: number | null) => {
+    if (focusedField === field) return '';
+    return value !== null ? value : '';
+  };
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -52,10 +70,17 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="current-weight"
             type="number"
-            value={currentWeight ?? ''}
+            value={getDisplayValue('current-weight', currentWeight)}
             onChange={(e) => {
               const value = e.target.value;
               setCurrentWeight(value === '' ? null : parseFloat(value));
+            }}
+            onFocus={() => setFocusedField('current-weight')}
+            onBlur={() => {
+              setFocusedField(null);
+              if (currentWeight === null) {
+                setCurrentWeight(DEFAULT_VALUES.currentWeight);
+              }
             }}
           />
         </div>
@@ -65,10 +90,17 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="target-weight"
             type="number"
-            value={targetWeight ?? ''}
+            value={getDisplayValue('target-weight', targetWeight)}
             onChange={(e) => {
               const value = e.target.value;
               setTargetWeight(value === '' ? null : parseFloat(value));
+            }}
+            onFocus={() => setFocusedField('target-weight')}
+            onBlur={() => {
+              setFocusedField(null);
+              if (targetWeight === null) {
+                setTargetWeight(DEFAULT_VALUES.targetWeight);
+              }
             }}
           />
         </div>
@@ -78,10 +110,17 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="height"
             type="number"
-            value={height ?? ''}
+            value={getDisplayValue('height', height)}
             onChange={(e) => {
               const value = e.target.value;
               setHeight(value === '' ? null : parseFloat(value));
+            }}
+            onFocus={() => setFocusedField('height')}
+            onBlur={() => {
+              setFocusedField(null);
+              if (height === null) {
+                setHeight(DEFAULT_VALUES.height);
+              }
             }}
           />
         </div>
@@ -91,10 +130,17 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="age"
             type="number"
-            value={age ?? ''}
+            value={getDisplayValue('age', age)}
             onChange={(e) => {
               const value = e.target.value;
               setAge(value === '' ? null : parseInt(value));
+            }}
+            onFocus={() => setFocusedField('age')}
+            onBlur={() => {
+              setFocusedField(null);
+              if (age === null) {
+                setAge(DEFAULT_VALUES.age);
+              }
             }}
           />
         </div>
@@ -104,10 +150,17 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="body-fat"
             type="number"
-            value={bodyFatPercentage ?? ''}
+            value={getDisplayValue('body-fat', bodyFatPercentage)}
             onChange={(e) => {
               const value = e.target.value;
               setBodyFatPercentage(value === '' ? null : parseFloat(value));
+            }}
+            onFocus={() => setFocusedField('body-fat')}
+            onBlur={() => {
+              setFocusedField(null);
+              if (bodyFatPercentage === null) {
+                setBodyFatPercentage(DEFAULT_VALUES.bodyFatPercentage);
+              }
             }}
           />
         </div>
