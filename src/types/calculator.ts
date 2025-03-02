@@ -8,16 +8,16 @@ export interface CalculatorData {
   // Основные параметры
   gender: Gender;
   setGender: (value: Gender) => void;
-  currentWeight: number;
-  setCurrentWeight: (value: number) => void;
-  targetWeight: number;
-  setTargetWeight: (value: number) => void;
-  height: number;
-  setHeight: (value: number) => void;
-  age: number;
-  setAge: (value: number) => void;
-  bodyFatPercentage: number;
-  setBodyFatPercentage: (value: number) => void;
+  currentWeight: number | null;
+  setCurrentWeight: (value: number | null) => void;
+  targetWeight: number | null;
+  setTargetWeight: (value: number | null) => void;
+  height: number | null;
+  setHeight: (value: number | null) => void;
+  age: number | null;
+  setAge: (value: number | null) => void;
+  bodyFatPercentage: number | null;
+  setBodyFatPercentage: (value: number | null) => void;
   activityLevel: ActivityLevel;
   setActivityLevel: (value: ActivityLevel) => void;
   dietType: DietType;

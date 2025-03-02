@@ -16,6 +16,15 @@ import LifestyleTab from './calculator/LifestyleTab';
 // Импортируем типы
 import type { ActivityLevel, DietType, CalculatorData, Gender } from '@/types/calculator';
 
+// Значения по умолчанию для полей ввода
+const DEFAULT_VALUES = {
+  currentWeight: 97.3,
+  targetWeight: 90,
+  height: 189,
+  age: 32,
+  bodyFatPercentage: 29.0
+};
+
 const ScientificCalorieCalculator = () => {
   // Состояние для отслеживания, находимся ли мы на шаге настройки или на шаге результатов
   const [currentStep, setCurrentStep] = useState<'settings' | 'results'>('settings');
@@ -121,11 +130,14 @@ const ScientificCalorieCalculator = () => {
   const optimalDeficit = Math.round(tdee * (optimalDeficitPercentage / 100));
   const optimalIntake = tdee - optimalDeficit;
   
+  // Обеспечиваем безопасность от null значений
+  const safeCurrentWeight = currentWeight ?? DEFAULT_VALUES.currentWeight;
+  
   // Макронутриенты - корректировка с учетом пола и типа диеты
   // Мужчинам и женщинам требуется разное количество белка для сохранения мышечной массы
   let proteinPerKg = gender === "male" ? 2.0 : 2.2;
   let fatPercentage = gender === "male" ? 30 : 35;
-  let carbPercentage = 100 - fatPercentage - (proteinPerKg * currentWeight * 4 / optimalIntake * 100);
+  let carbPercentage = 100 - fatPercentage - (proteinPerKg * safeCurrentWeight * 4 / optimalIntake * 100);
   
   if (dietType === "cyclic") {
     // Для циклического питания
@@ -155,15 +167,15 @@ const ScientificCalorieCalculator = () => {
         setModCarbDays(2);
         
         // Рассчитываем значения для низкоуглеводных и умеренных дней при циклическом питании
-        if (optimalIntake > 0 && currentWeight > 0 && proteinPerKg > 0) {
-          const lowCarbDailyProteinGrams = Math.round(currentWeight * proteinPerKg);
+        if (optimalIntake > 0 && proteinPerKg > 0) {
+          const lowCarbDailyProteinGrams = Math.round(safeCurrentWeight * proteinPerKg);
           const lowCarbProteinCalories = lowCarbDailyProteinGrams * 4;
           const lowCarbFatPercentage = gender === "male" ? 65 : 60;
           const lowCarbFatCalories = Math.round(optimalIntake * (lowCarbFatPercentage / 100));
           const lowCarbCarbohydrateCalories = optimalIntake - lowCarbProteinCalories - lowCarbFatCalories;
           const lowCarbGrams = Math.round(lowCarbCarbohydrateCalories / 4);
           
-          const modCarbDailyProteinGrams = Math.round(currentWeight * proteinPerKg);
+          const modCarbDailyProteinGrams = Math.round(safeCurrentWeight * proteinPerKg);
           const modCarbProteinCalories = modCarbDailyProteinGrams * 4;
           const modCarbFatPercentage = gender === "male" ? 30 : 35;
           const modCarbFatCalories = Math.round(optimalIntake * (modCarbFatPercentage / 100));
@@ -192,7 +204,7 @@ const ScientificCalorieCalculator = () => {
     }
   }, [dietType, gender, optimalIntake, currentWeight, proteinPerKg]);
   
-  const dailyProteinGrams = Math.round(currentWeight * proteinPerKg);
+  const dailyProteinGrams = Math.round(safeCurrentWeight * proteinPerKg);
   const proteinCalories = dailyProteinGrams * 4;
   
   const fatCalories = Math.round(optimalIntake * (fatPercentage / 100));
@@ -210,8 +222,8 @@ const ScientificCalorieCalculator = () => {
   // Рекомендации по хронобиологии и образу жизни
   // Мужчинам и женщинам требуется разное количество воды
   const waterPerDay = gender === 'female'
-    ? Math.round((currentWeight * 0.03) * 10) / 10  // 30 мл на кг для женщин
-    : Math.round((currentWeight * 0.033) * 10) / 10; // 33 мл на кг для мужчин
+    ? Math.round((safeCurrentWeight * 0.03) * 10) / 10  // 30 мл на кг для женщин
+    : Math.round((safeCurrentWeight * 0.033) * 10) / 10; // 33 мл на кг для мужчин
     
   const recommendedFiber = Math.round(optimalIntake / 1000 * 14); // 14г клетчатки на 1000 ккал
   
@@ -219,7 +231,8 @@ const ScientificCalorieCalculator = () => {
   const refeedDay = tdee;
   
   // Расчеты для графиков
-  const weightToLose = currentWeight - targetWeight;
+  const safeTargetWeight = targetWeight ?? DEFAULT_VALUES.targetWeight;
+  const weightToLose = safeCurrentWeight - safeTargetWeight;
   const scientificCaloriesPerKg = 8800;
   
   const deficitPercentageOptimal = (optimalDeficit / tdee) * 100;
@@ -251,16 +264,16 @@ const ScientificCalorieCalculator = () => {
     const weeklyLossFast = (1000 * 7) / scientificCaloriesPerKg;
     
     const data = [];
-    let currentOptimalWeight = currentWeight;
-    let currentFastWeight = currentWeight;
+    let currentOptimalWeight = safeCurrentWeight;
+    let currentFastWeight = safeCurrentWeight;
     
     for (let week = 0; week <= weeks; week++) {
       // Учитываем диетические перерывы каждые 6 недель
       if (week > 0 && week % 6 === 0) {
         // В неделю диетического перерыва вес не меняется
       } else {
-        currentOptimalWeight = Math.max(targetWeight, currentOptimalWeight - weeklyLossOptimal);
-        currentFastWeight = Math.max(targetWeight, currentFastWeight - weeklyLossFast);
+        currentOptimalWeight = Math.max(safeTargetWeight, currentOptimalWeight - weeklyLossOptimal);
+        currentFastWeight = Math.max(safeTargetWeight, currentFastWeight - weeklyLossFast);
       }
       
       data.push({
@@ -353,7 +366,7 @@ const ScientificCalorieCalculator = () => {
                   Назад к настройкам
                 </Button>
                 <div className="text-sm md:text-base">
-                  <span className="font-semibold">{gender === 'male' ? 'Мужчина' : 'Женщина'}</span>, {age} лет, {currentWeight} кг → {targetWeight} кг
+                  <span className="font-semibold">{gender === 'male' ? 'Мужчина' : 'Женщина'}</span>, {age ?? DEFAULT_VALUES.age} лет, {currentWeight ?? DEFAULT_VALUES.currentWeight} кг → {targetWeight ?? DEFAULT_VALUES.targetWeight} кг
                 </div>
               </div>
               
