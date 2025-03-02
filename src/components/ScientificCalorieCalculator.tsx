@@ -347,12 +347,12 @@ const ScientificCalorieCalculator = () => {
               </div>
               
               <Tabs defaultValue="main">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-4">
-                  <TabsTrigger value="main">Основные рекомендации</TabsTrigger>
-                  <TabsTrigger value="progress">Прогноз снижения веса</TabsTrigger>
-                  <TabsTrigger value="nutrition">Макронутриенты</TabsTrigger>
-                  <TabsTrigger value="training">Тренировки</TabsTrigger>
-                  <TabsTrigger value="lifestyle">Образ жизни</TabsTrigger>
+                <TabsList className="flex flex-wrap gap-1 w-full rounded-md md:grid md:grid-cols-5">
+                  <TabsTrigger value="main" className="flex-1 min-w-[48%] text-xs sm:text-sm">Основные рекомендации</TabsTrigger>
+                  <TabsTrigger value="progress" className="flex-1 min-w-[48%] text-xs sm:text-sm">Прогноз снижения веса</TabsTrigger>
+                  <TabsTrigger value="nutrition" className="flex-1 min-w-[48%] text-xs sm:text-sm">Макронутриенты</TabsTrigger>
+                  <TabsTrigger value="training" className="flex-1 min-w-[48%] text-xs sm:text-sm">Тренировки</TabsTrigger>
+                  <TabsTrigger value="lifestyle" className="flex-1 min-w-[48%] text-xs sm:text-sm">Образ жизни</TabsTrigger>
                 </TabsList>
               
                 <TabsContent value="main">
