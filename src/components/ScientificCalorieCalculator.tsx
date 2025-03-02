@@ -22,11 +22,11 @@ const ScientificCalorieCalculator = () => {
   
   // Исходные данные с возможностью настройки
   const [gender, setGender] = useState<Gender>('male');
-  const [currentWeight, setCurrentWeight] = useState(97.3);
-  const [targetWeight, setTargetWeight] = useState(90);
-  const [height, setHeight] = useState(189); // рост в см
-  const [age, setAge] = useState(32);
-  const [bodyFatPercentage, setBodyFatPercentage] = useState(29.0); // % жира в теле
+  const [currentWeight, setCurrentWeight] = useState<number | null>(97.3);
+  const [targetWeight, setTargetWeight] = useState<number | null>(90);
+  const [height, setHeight] = useState<number | null>(189); // рост в см
+  const [age, setAge] = useState<number | null>(32);
+  const [bodyFatPercentage, setBodyFatPercentage] = useState<number | null>(29.0); // % жира в теле
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate');
   const [dietType, setDietType] = useState<DietType>("standard");
   
@@ -46,6 +46,11 @@ const ScientificCalorieCalculator = () => {
   const goToResults = () => {
     // Проверяем валидность введенных данных
     if (
+      currentWeight !== null && 
+      targetWeight !== null && 
+      height !== null && 
+      age !== null && 
+      bodyFatPercentage !== null &&
       currentWeight > 0 && 
       targetWeight > 0 && 
       height > 0 && 
@@ -67,6 +72,12 @@ const ScientificCalorieCalculator = () => {
   
   // Пересчитываем BMR и TDEE при изменении основных параметров
   useEffect(() => {
+    // Проверяем, что все необходимые значения не null
+    if (currentWeight === null || height === null || age === null || bodyFatPercentage === null) {
+      // Если какое-то из значений null, не выполняем расчеты
+      return;
+    }
+    
     // Рассчитываем BMR в зависимости от пола и состава тела
     let calculatedBmr;
     

@@ -52,8 +52,11 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="current-weight"
             type="number"
-            value={currentWeight}
-            onChange={(e) => setCurrentWeight(parseFloat(e.target.value) || 0)}
+            value={currentWeight ?? ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              setCurrentWeight(value === '' ? null : parseFloat(value));
+            }}
           />
         </div>
         
@@ -62,8 +65,11 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="target-weight"
             type="number"
-            value={targetWeight}
-            onChange={(e) => setTargetWeight(parseFloat(e.target.value) || 0)}
+            value={targetWeight ?? ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              setTargetWeight(value === '' ? null : parseFloat(value));
+            }}
           />
         </div>
         
@@ -72,8 +78,11 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="height"
             type="number"
-            value={height}
-            onChange={(e) => setHeight(parseFloat(e.target.value) || 0)}
+            value={height ?? ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              setHeight(value === '' ? null : parseFloat(value));
+            }}
           />
         </div>
         
@@ -82,8 +91,11 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="age"
             type="number"
-            value={age}
-            onChange={(e) => setAge(parseInt(e.target.value) || 0)}
+            value={age ?? ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAge(value === '' ? null : parseInt(value));
+            }}
           />
         </div>
         
@@ -92,8 +104,11 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
           <Input
             id="body-fat"
             type="number"
-            value={bodyFatPercentage}
-            onChange={(e) => setBodyFatPercentage(parseFloat(e.target.value) || 0)}
+            value={bodyFatPercentage ?? ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              setBodyFatPercentage(value === '' ? null : parseFloat(value));
+            }}
           />
         </div>
         
