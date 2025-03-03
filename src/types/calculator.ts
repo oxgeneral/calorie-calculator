@@ -2,6 +2,7 @@
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'veryActive';
 export type DietType = 'standard' | 'cyclic' | 'carb-backloading' | 'if';
 export type Gender = 'male' | 'female';
+export type WeightGoal = 'loss' | 'gain';
 
 // Интерфейс для данных калькулятора
 export interface CalculatorData {
@@ -22,6 +23,9 @@ export interface CalculatorData {
   setActivityLevel: (value: ActivityLevel) => void;
   dietType: DietType;
   setDietType: (value: DietType) => void;
+  
+  // Цель по весу (похудение или набор массы)
+  weightGoal: WeightGoal;
   
   // Рассчитанные значения
   bmr: number;

@@ -367,7 +367,9 @@ const ScientificCalorieCalculator = () => {
     // Добавляем новые переменные для типов диеты
     lowCarbDays, modCarbDays, 
     carbTimingPreference, feedingWindow,
-    lowCarbCarbGrams, modCarbCarbGrams
+    lowCarbCarbGrams, modCarbCarbGrams,
+    // Добавляем цель по весу
+    weightGoal
   };
   
   return (
