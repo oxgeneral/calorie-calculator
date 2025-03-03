@@ -31,63 +31,103 @@ const ProgressTab: React.FC<ProgressTabProps> = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-lg font-medium mb-3">Прогноз снижения веса</h3>
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trajectoryData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" tick={{fontSize: 11}} />
-                <YAxis 
-                  domain={[
-                    (targetWeight ?? DEFAULT_VALUES.targetWeight) - 1, 
-                    (currentWeight ?? DEFAULT_VALUES.currentWeight) + 1
-                  ]} 
-                  tick={{fontSize: 11}} 
-                />
-                <Tooltip />
-                <Legend wrapperStyle={{fontSize: 11}} />
-                <Line 
-                  type="monotone" 
-                  dataKey="scientific" 
-                  name="Научный подход с рефидами" 
-                  stroke="#3b82f6" 
-                  strokeWidth={2}
-                  activeDot={{ r: 8 }} 
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="fast" 
-                  name="Быстрый подход (-1000 ккал)" 
-                  stroke="#f87171" 
-                  strokeDasharray="5 5"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="w-full h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={trajectoryData}
+            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <XAxis 
+              dataKey="week" 
+              label={{ value: 'Недели', position: 'insideBottomRight', offset: -5, fill: '#fff' }}
+              tick={{ fill: '#fff', fontSize: 11 }}
+            />
+            <YAxis 
+              domain={[(targetWeight ?? DEFAULT_VALUES.targetWeight) - 1, (currentWeight ?? DEFAULT_VALUES.currentWeight) + 1]} 
+              label={{ value: 'Вес (кг)', angle: -90, position: 'insideLeft', fill: '#fff' }}
+              tick={{ fill: '#fff', fontSize: 11 }}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '4px' }}
+              labelStyle={{ color: '#fff' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Legend wrapperStyle={{ color: '#fff' }} />
+            <Line 
+              type="monotone" 
+              dataKey="scientific" 
+              name="Научный подход" 
+              stroke="#4CAF50" 
+              activeDot={{ r: 8 }} 
+              strokeWidth={2}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="fast" 
+              name="Быстрый подход" 
+              stroke="#F44336" 
+              activeDot={{ r: 8 }} 
+              strokeWidth={2}
+              strokeDasharray="5 5"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="w-full h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={muscleLossData}
+            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fill: '#fff', fontSize: 11 }}
+            />
+            <YAxis 
+              tick={{ fill: '#fff', fontSize: 11 }}
+              label={{ value: 'Килограммы', angle: -90, position: 'insideLeft', fill: '#fff' }}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '4px' }}
+              labelStyle={{ color: '#fff' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Legend wrapperStyle={{ color: '#fff' }} />
+            <Bar 
+              dataKey="fat" 
+              name="Потеря жира" 
+              stackId="a" 
+              fill="#4CAF50" 
+            />
+            <Bar 
+              dataKey="muscle" 
+              name="Потеря мышц" 
+              stackId="a" 
+              fill="#F44336" 
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="p-4 rounded-lg bg-white/10">
+        <h3 className="text-lg font-medium mb-3 text-white text-center">Сроки достижения цели</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-3 bg-white/5 rounded text-center">
+            <div className="text-sm text-white/70 mb-1">Научный подход</div>
+            <div className="text-xl font-bold text-white">{Math.round(weeksToGoalWithRefeed)} недель</div>
+            <div className="text-sm text-white/70 mt-1">
+              <span className="text-green-400">{totalMuscleLossOptimal.toFixed(1)} кг</span> потери мышц
+            </div>
           </div>
-          <div className="text-xs sm:text-sm text-gray-600 mt-2">
-            * График учитывает адаптивный термогенез, периодизацию диеты и диетические перерывы
-          </div>
-        </div>
-        
-        <div>
-          <h3 className="text-lg font-medium mb-3">Состав потери веса</h3>
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={muscleLossData} stackOffset="expand" layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" tickFormatter={(value: number) => `${(value*100).toFixed(0)}%`} tick={{fontSize: 11}} />
-                <YAxis type="category" dataKey="name" width={100} tick={{fontSize: 11}} />
-                <Tooltip formatter={(value: number) => `${value.toFixed(1)} кг`} />
-                <Legend wrapperStyle={{fontSize: 11}} />
-                <Bar dataKey="fat" name="Жировая ткань" stackId="a" fill="#10b981" />
-                <Bar dataKey="muscle" name="Мышечная ткань" stackId="a" fill="#f87171" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="text-xs sm:text-sm text-gray-600 mt-2">
-            * На основе научных данных о сохранении мышечной массы при разных дефицитах калорий
+          <div className="p-3 bg-white/5 rounded text-center">
+            <div className="text-sm text-white/70 mb-1">Быстрый подход</div>
+            <div className="text-xl font-bold text-white">{Math.round(weeksToGoalWithRefeed * 0.7)} недель</div>
+            <div className="text-sm text-white/70 mt-1">
+              <span className="text-red-400">{totalMuscleLossFast.toFixed(1)} кг</span> потери мышц
+            </div>
           </div>
         </div>
       </div>

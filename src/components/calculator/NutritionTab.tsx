@@ -27,94 +27,68 @@ const NutritionTab: React.FC<NutritionTabProps> = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-lg font-medium mb-3">Оптимальное распределение макронутриентов</h3>
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={macroData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{fontSize: 12}} />
-                <YAxis 
-                  yAxisId="left" 
-                  orientation="left" 
-                  tick={{fontSize: 11}}
-                  label={{ value: 'Граммы', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }} 
-                />
-                <YAxis 
-                  yAxisId="right" 
-                  orientation="right" 
-                  tick={{fontSize: 11}}
-                  label={{ value: 'Калории', angle: 90, position: 'insideRight', style: { fontSize: '12px' } }} 
-                />
-                <Tooltip formatter={(value, name, props) => [value, props.payload.name]} />
-                <Legend wrapperStyle={{fontSize: 12}} />
-                <Bar yAxisId="left" dataKey="grams" name="Граммы" fill="#3b82f6" />
-                <Bar yAxisId="right" dataKey="calories" name="Калории" fill="#60a5fa" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <div className="w-full h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={macroData}
+            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+            <XAxis dataKey="name" tick={{ fill: '#fff', fontSize: 11 }} />
+            <YAxis yAxisId="left" orientation="left" tick={{ fill: '#fff', fontSize: 11 }} />
+            <YAxis yAxisId="right" orientation="right" tick={{ fill: '#fff', fontSize: 11 }} />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '4px' }}
+              labelStyle={{ color: '#fff' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Legend wrapperStyle={{ color: '#fff' }} />
+            <Bar yAxisId="left" dataKey="grams" name="Граммы" fill="#4CAF50" />
+            <Bar yAxisId="right" dataKey="calories" name="Калории" fill="#2196F3" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-3 rounded-lg bg-white/10 text-center">
+          <div className="text-sm text-white/70 mb-1">Белки</div>
+          <div className="text-xl font-bold text-white">{dailyProteinGrams}г</div>
+          <div className="text-xs text-white/70">{proteinCalories} ккал</div>
         </div>
-        
-        <div>
-          <h3 className="text-lg font-medium mb-3">Оптимальное соотношение макронутриентов</h3>
-          <div className="space-y-4">
-            <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
-              <div className="font-medium">Белки: {dailyProteinGrams} г ({proteinCalories} ккал)</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${Math.round(proteinCalories/optimalIntake*100)}%` }}></div>
-              </div>
-              <div className="text-xs sm:text-sm mt-1">{Math.round(proteinCalories/optimalIntake*100)}% от общей калорийности</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                {dietType === 'if' || dietType === 'cyclic'
-                  ? `Научная рекомендация: ${gender === 'female' ? '2.2-2.4' : '2.0-2.2'} г/кг для ${dietType === 'if' ? 'интервального голодания' : 'циклического питания'}`
-                  : `Научная рекомендация: ${gender === 'female' ? '1.8-2.0' : '1.8-2.0'} г/кг для сохранения мышечной массы`
-                }
-              </div>
-            </div>
-            
-            <div className="p-3 bg-green-50 rounded-md border border-green-200">
-              <div className="font-medium">Жиры: {dailyFatGrams} г ({fatCalories} ккал)</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                <div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${Math.round(fatCalories/optimalIntake*100)}%` }}></div>
-              </div>
-              <div className="text-xs sm:text-sm mt-1">{Math.round(fatCalories/optimalIntake*100)}% от общей калорийности</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                {dietType === 'cyclic'
-                  ? `Для циклического питания: ${gender === 'female' ? '35-60%' : '30-65%'} (зависит от дня)`
-                  : (dietType === 'if'
-                    ? `Для интервального голодания: ${gender === 'female' ? '35-40%' : '30-35%'} для гормонального баланса`
-                    : `Научная рекомендация: ${gender === 'female' ? '30-35%' : '25-30%'} для гормонального баланса`
-                  )
-                }
-              </div>
-            </div>
-            
-            <div className="p-3 bg-purple-50 rounded-md border border-purple-200">
-              <div className="font-medium">Углеводы: {dailyCarbGrams} г ({carbCalories} ккал)</div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                <div className="bg-purple-600 h-2.5 rounded-full" style={{ width: `${Math.round(carbCalories/optimalIntake*100)}%` }}></div>
-              </div>
-              <div className="text-xs sm:text-sm mt-1">{Math.round(carbCalories/optimalIntake*100)}% от общей калорийности</div>
-              
-              {dietType === 'cyclic' && (
-                <div className="bg-indigo-50 p-2 mt-2 rounded-md">
-                  <p className="text-xs sm:text-sm font-medium">Распределение по циклу:</p>
-                  <p className="text-xs sm:text-sm">Низкоуглеводные дни: ~{lowCarbCarbGrams} г</p>
-                  <p className="text-xs sm:text-sm">Умеренные дни: ~{modCarbCarbGrams} г</p>
-                </div>
-              )}
-              
-              {dietType === 'carb-backloading' && (
-                <div className="bg-indigo-50 p-2 mt-2 rounded-md">
-                  <p className="text-xs sm:text-sm font-medium">Распределение по времени:</p>
-                  <p className="text-xs sm:text-sm">До 16:00: ~{Math.round(dailyCarbGrams * 0.3)} г (30%)</p>
-                  <p className="text-xs sm:text-sm">После 16:00: ~{Math.round(dailyCarbGrams * 0.7)} г (70%)</p>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="p-3 rounded-lg bg-white/10 text-center">
+          <div className="text-sm text-white/70 mb-1">Жиры</div>
+          <div className="text-xl font-bold text-white">{dailyFatGrams}г</div>
+          <div className="text-xs text-white/70">{fatCalories} ккал</div>
         </div>
+        <div className="p-3 rounded-lg bg-white/10 text-center">
+          <div className="text-sm text-white/70 mb-1">Углеводы</div>
+          <div className="text-xl font-bold text-white">{dailyCarbGrams}г</div>
+          <div className="text-xs text-white/70">{carbCalories} ккал</div>
+        </div>
+      </div>
+      
+      <div className="p-4 rounded-lg bg-white/10">
+        <h3 className="text-lg font-medium mb-3 text-white text-center">Научные рекомендации</h3>
+        <ul className="space-y-3 text-white/80">
+          <li className="flex items-start">
+            <span className="text-green-400 mr-2">•</span> 
+            <span>Белок: <strong>{dailyProteinGrams/optimalIntake*100}%</strong> от общей калорийности</span>
+          </li>
+          <li className="flex items-start">
+            <span className="text-blue-400 mr-2">•</span> 
+            <span>Жиры: минимум <strong>{gender === 'male' ? '0.5' : '0.4'} г/кг</strong> веса для гормонального здоровья</span>
+          </li>
+          <li className="flex items-start">
+            <span className="text-amber-400 mr-2">•</span> 
+            <span>Распределение белка: <strong>4-5 приемов</strong> в день для максимального анаболизма</span>
+          </li>
+          {dietType === "cyclic" && (
+            <li className="flex items-start">
+              <span className="text-purple-400 mr-2">•</span> 
+              <span>Цикличность: <strong>{lowCarbCarbGrams}г</strong> углеводов в {lowCarbCarbGrams} дней</span>
+            </li>
+          )}
+        </ul>
       </div>
       
       <div className="p-3 sm:p-4 bg-amber-50 rounded-md border border-amber-200">
