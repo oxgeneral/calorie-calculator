@@ -19,6 +19,9 @@ const initialData: CalculatorData = {
   activityLevel: 'moderate',
   dietType: 'standard',
   
+  // Цель по весу (похудение по умолчанию)
+  weightGoal: 'loss',
+  
   // Методы установки значений - будут определены в useState
   setGender: () => {},
   setCurrentWeight: () => {},
