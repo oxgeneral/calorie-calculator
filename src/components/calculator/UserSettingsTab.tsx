@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -41,6 +41,7 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
     bodyFatPercentage, setBodyFatPercentage,
     activityLevel, setActivityLevel,
     dietType, setDietType,
+    weightGoal,
   } = data;
 
   // Инициализация локальных значений при монтировании и изменении значений
@@ -53,6 +54,13 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
       bodyFat: bodyFatPercentage !== null ? bodyFatPercentage.toString() : ''
     });
   }, [currentWeight, targetWeight, height, age, bodyFatPercentage]);
+
+  // Проверяем и корректируем тип диеты при изменении цели
+  useEffect(() => {
+    if (weightGoal === 'gain' && dietType === 'if') {
+      setDietType('standard');
+    }
+  }, [weightGoal, dietType, setDietType]);
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -223,7 +231,9 @@ const UserSettingsTab: React.FC<UserSettingsTabProps> = ({ data }) => {
               <SelectItem value="standard">Стандартный научный подход</SelectItem>
               <SelectItem value="cyclic">Циклическое углеводное питание (5+2)</SelectItem>
               <SelectItem value="carb-backloading">Углеводная загрузка вечером</SelectItem>
-              <SelectItem value="if">Интервальное голодание (16:8)</SelectItem>
+              {weightGoal === 'loss' && (
+                <SelectItem value="if">Интервальное голодание (16:8)</SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>

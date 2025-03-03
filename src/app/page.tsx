@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import UserSettingsTab from '@/components/calculator/UserSettingsTab';
 import CategorySelection from '@/components/story/CategorySelection';
 import { ActivityLevel, CalculatorData, DietType, Gender } from '@/types/calculator';
+import ScientificCalorieCalculator from '@/components/ScientificCalorieCalculator';
 
 // Начальные данные для калькулятора
 const initialData: CalculatorData = {
@@ -126,71 +127,18 @@ const categories = [
 ];
 
 export default function Home() {
-  const [setupComplete, setSetupComplete] = useState(false);
-  const [calculatorData, setCalculatorData] = useState<CalculatorData>({
-    ...initialData,
-    setGender: (gender: Gender) => setCalculatorData(prev => ({ ...prev, gender })),
-    setCurrentWeight: (currentWeight: number | null) => setCalculatorData(prev => ({ ...prev, currentWeight })),
-    setTargetWeight: (targetWeight: number | null) => setCalculatorData(prev => ({ ...prev, targetWeight })),
-    setHeight: (height: number | null) => setCalculatorData(prev => ({ ...prev, height })),
-    setAge: (age: number | null) => setCalculatorData(prev => ({ ...prev, age })),
-    setBodyFatPercentage: (bodyFatPercentage: number | null) => setCalculatorData(prev => ({ ...prev, bodyFatPercentage })),
-    setActivityLevel: (activityLevel: ActivityLevel) => setCalculatorData(prev => ({ ...prev, activityLevel })),
-    setDietType: (dietType: DietType) => setCalculatorData(prev => ({ ...prev, dietType })),
-  });
-
-  useEffect(() => {
-    // Вычисление всех значений на основе базовых параметров
-    if (calculatorData.currentWeight !== null && 
-        calculatorData.targetWeight !== null && 
-        calculatorData.height !== null && 
-        calculatorData.age !== null && 
-        calculatorData.bodyFatPercentage !== null) {
-          
-      // Тут сохраняем вычисления из ScientificCalorieCalculator
-      // Для примера я опустил детализацию вычислений, которые будут сохранены 
-      // в полной реализации из существующего компонента
-    }
-  }, [
-    calculatorData.gender,
-    calculatorData.currentWeight,
-    calculatorData.targetWeight,
-    calculatorData.height,
-    calculatorData.age,
-    calculatorData.bodyFatPercentage,
-    calculatorData.activityLevel,
-    calculatorData.dietType
-  ]);
-
-  // Функция для завершения настройки и перехода к выбору категорий
-  const completeSetup = () => {
-    setSetupComplete(true);
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white">
-      {!setupComplete ? (
-        // Страница настроек
-        <div className="p-4 pb-16">
-          <h1 className="text-2xl font-bold mb-6 text-center">Худей научно</h1>
-          <p className="text-center mb-8 text-white/70">
-            Введите ваши параметры для персонализированных рекомендаций
-          </p>
-          <UserSettingsTab data={calculatorData} />
-          
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={completeSetup}
-              className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              Сохранить и продолжить
-            </button>
-          </div>
-        </div>
-      ) : (
-        // Страница выбора категорий
-        <CategorySelection categories={categories} />
-      )}
+    <div>
+      <h1 className="text-3xl font-bold text-center mb-8">
+        Личный научный диетолог
+      </h1>
+      <div className="max-w-5xl mx-auto">
+        <ScientificCalorieCalculator />
+      </div>
+      <footer className="mt-12 text-center text-sm text-gray-500">
+        <p>Основано на современных научных исследованиях в области питания и метаболизма</p>
+        <p className="mt-2">© {new Date().getFullYear()} Личный научный диетолог</p>
+      </footer>
     </div>
   );
 } 

@@ -64,13 +64,12 @@ const ScientificCalorieCalculator = () => {
       targetWeight > 0 && 
       height > 0 && 
       age > 0 && 
-      bodyFatPercentage > 0 && 
-      currentWeight > targetWeight // вес должен снижаться
+      bodyFatPercentage > 0
     ) {
       setCurrentStep('results');
     } else {
       // В реальном приложении здесь можно добавить вывод сообщения об ошибке
-      alert('Пожалуйста, заполните все поля корректно. Текущий вес должен быть больше целевого.');
+      alert('Пожалуйста, заполните все поля корректно.');
     }
   };
   
@@ -124,11 +123,27 @@ const ScientificCalorieCalculator = () => {
     setTdee(calculatedTdee);
   }, [currentWeight, height, age, activityLevel, targetWeight, bodyFatPercentage, gender]);
   
-  // Научно обоснованные расчеты с учетом пола
-  // Женщинам рекомендуется меньший дефицит для предотвращения гормональных нарушений
-  const optimalDeficitPercentage = gender === 'female' ? 20 : 23;
-  const optimalDeficit = Math.round(tdee * (optimalDeficitPercentage / 100));
-  const optimalIntake = tdee - optimalDeficit;
+  // Расчеты для графиков
+  const safeTargetWeight = targetWeight ?? DEFAULT_VALUES.targetWeight;
+  const weightToLose = currentWeight - safeTargetWeight;
+  const weightGoal = weightToLose > 0 ? 'loss' : 'gain'; // Определяем цель - потеря или набор веса
+  const absWeightChange = Math.abs(weightToLose);
+  const scientificCaloriesPerKg = 8800;
+  
+  // Расчеты в зависимости от цели (похудение или набор массы)
+  let optimalDeficitPercentage, optimalDeficit, optimalIntake;
+  
+  if (weightGoal === 'loss') {
+    // Женщинам рекомендуется меньший дефицит для предотвращения гормональных нарушений
+    optimalDeficitPercentage = gender === 'female' ? 20 : 23;
+    optimalDeficit = Math.round(tdee * (optimalDeficitPercentage / 100));
+    optimalIntake = tdee - optimalDeficit;
+  } else {
+    // Для набора массы рекомендуется профицит, но меньший, чтобы минимизировать накопление жира
+    optimalDeficitPercentage = gender === 'female' ? -12 : -15; // Профицит, поэтому отрицательный
+    optimalDeficit = Math.round(tdee * (optimalDeficitPercentage / 100));
+    optimalIntake = tdee - optimalDeficit; // При отрицательном дефиците получаем профицит
+  }
   
   // Обеспечиваем безопасность от null значений
   const safeCurrentWeight = currentWeight ?? DEFAULT_VALUES.currentWeight;
@@ -230,28 +245,33 @@ const ScientificCalorieCalculator = () => {
   // Рефиды
   const refeedDay = tdee;
   
-  // Расчеты для графиков
-  const safeTargetWeight = targetWeight ?? DEFAULT_VALUES.targetWeight;
-  const weightToLose = safeCurrentWeight - safeTargetWeight;
-  const scientificCaloriesPerKg = 8800;
+  // Потеря или набор мышц в зависимости от цели
+  let muscleLossPercentageOptimal, muscleLossPercentageFast, totalMuscleLossOptimal, totalMuscleLossFast;
   
-  const deficitPercentageOptimal = (optimalDeficit / tdee) * 100;
-  const deficitPercentageFast = 37.8; // из расчетов
+  if (weightGoal === 'loss') {
+    // Потеря мышц - разная для мужчин и женщин
+    muscleLossPercentageOptimal = gender === 'female' ? 25 : 20; // Из расчетов
+    muscleLossPercentageFast = gender === 'female' ? 35 : 30; // Из расчетов
+    
+    totalMuscleLossOptimal = (absWeightChange * (muscleLossPercentageOptimal / 100));
+    totalMuscleLossFast = (absWeightChange * (muscleLossPercentageFast / 100));
+  } else {
+    // Набор мышечной массы - разный для мужчин и женщин
+    // Естественные ограничения роста мышц, процент от общего набора веса
+    muscleLossPercentageOptimal = gender === 'female' ? 70 : 60; // % мышц от набора веса (оптимально)
+    muscleLossPercentageFast = gender === 'female' ? 45 : 40; // % мышц от набора веса (быстрый набор)
+    
+    totalMuscleLossOptimal = (absWeightChange * (muscleLossPercentageOptimal / 100)); // На самом деле, набор мышц
+    totalMuscleLossFast = (absWeightChange * (muscleLossPercentageFast / 100)); // Набор мышц при быстром наборе
+  }
   
-  // Потеря мышц - разная для мужчин и женщин
-  const muscleLossPercentageOptimal = gender === 'female' ? 25 : 20; // Из расчетов
-  const muscleLossPercentageFast = gender === 'female' ? 35 : 30; // Из расчетов
-  
-  const totalMuscleLossOptimal = (weightToLose * (muscleLossPercentageOptimal / 100));
-  const totalMuscleLossFast = (weightToLose * (muscleLossPercentageFast / 100));
-  
-  // График прогресса с рефидами
-  const weeklyOptimalDeficitWithRefeed = (optimalDeficit * 6 + 0) / 7;
-  const daysToGoalWithRefeed = Math.round((weightToLose * scientificCaloriesPerKg) / weeklyOptimalDeficitWithRefeed);
+  // График прогресса с учетом цели
+  const weeklyDeficitWithRefeed = (Math.abs(optimalDeficit) * 6 + 0) / 7; // Модуль, т.к. может быть отрицательным для набора
+  const daysToGoalWithRefeed = Math.round((absWeightChange * scientificCaloriesPerKg) / weeklyDeficitWithRefeed);
   const weeksToGoalWithRefeed = Math.round(daysToGoalWithRefeed / 7);
   
   // Диетические перерывы
-  const dietBreakWeeks = Math.floor(weeksToGoalWithRefeed / 6);
+  const dietBreakWeeks = Math.floor(weeksToGoalWithRefeed / (weightGoal === 'loss' ? 6 : 8));
   const totalWeeksWithBreaks = weeksToGoalWithRefeed + dietBreakWeeks;
   
   // Улучшение с хронобиологией
@@ -260,20 +280,28 @@ const ScientificCalorieCalculator = () => {
   
   const generateTrajectoryData = () => {
     const weeks = totalWeeksWithBreaks + 2;
-    const weeklyLossOptimal = (weeklyOptimalDeficitWithRefeed * 7) / scientificCaloriesPerKg;
-    const weeklyLossFast = (1000 * 7) / scientificCaloriesPerKg;
+    const weeklyChange = (weeklyDeficitWithRefeed * 7) / scientificCaloriesPerKg;
+    const weeklyChangeFast = (weightGoal === 'loss' ? 1000 : -1200) * 7 / scientificCaloriesPerKg;
+    
+    const direction = weightGoal === 'loss' ? -1 : 1; // -1 для похудения, +1 для набора
     
     const data = [];
     let currentOptimalWeight = safeCurrentWeight;
     let currentFastWeight = safeCurrentWeight;
     
     for (let week = 0; week <= weeks; week++) {
-      // Учитываем диетические перерывы каждые 6 недель
-      if (week > 0 && week % 6 === 0) {
+      // Учитываем диетические перерывы 
+      const breakPeriod = weightGoal === 'loss' ? 6 : 8;
+      if (week > 0 && week % breakPeriod === 0) {
         // В неделю диетического перерыва вес не меняется
       } else {
-        currentOptimalWeight = Math.max(safeTargetWeight, currentOptimalWeight - weeklyLossOptimal);
-        currentFastWeight = Math.max(safeTargetWeight, currentFastWeight - weeklyLossFast);
+        currentOptimalWeight = weightGoal === 'loss' 
+          ? Math.max(safeTargetWeight, currentOptimalWeight - weeklyChange)
+          : Math.min(safeTargetWeight, currentOptimalWeight + weeklyChange);
+          
+        currentFastWeight = weightGoal === 'loss'
+          ? Math.max(safeTargetWeight, currentFastWeight - Math.abs(weeklyChangeFast))
+          : Math.min(safeTargetWeight, currentFastWeight + Math.abs(weeklyChangeFast));
       }
       
       data.push({
@@ -292,10 +320,15 @@ const ScientificCalorieCalculator = () => {
     { name: 'Углеводы', grams: dailyCarbGrams, calories: carbCalories, percent: Math.round(carbCalories/optimalIntake*100) }
   ];
   
-  const muscleLossData = [
-    { name: 'Научный подход', fat: weightToLose - totalMuscleLossOptimal, muscle: totalMuscleLossOptimal },
-    { name: 'Быстрый подход', fat: weightToLose - totalMuscleLossFast, muscle: totalMuscleLossFast }
-  ];
+  const muscleLossData = weightGoal === 'loss'
+    ? [
+        { name: 'Научный подход', fat: absWeightChange - totalMuscleLossOptimal, muscle: totalMuscleLossOptimal },
+        { name: 'Быстрый подход', fat: absWeightChange - totalMuscleLossFast, muscle: totalMuscleLossFast }
+      ]
+    : [
+        { name: 'Научный подход', fat: absWeightChange - totalMuscleLossOptimal, muscle: totalMuscleLossOptimal },
+        { name: 'Быстрый подход', fat: absWeightChange - totalMuscleLossFast, muscle: totalMuscleLossFast }
+      ];
   
   const trajectoryData = generateTrajectoryData();
   
@@ -324,10 +357,11 @@ const ScientificCalorieCalculator = () => {
     waterPerDay, recommendedFiber,
     refeedDay,
     weightToLose, scientificCaloriesPerKg,
-    deficitPercentageOptimal, deficitPercentageFast,
+    deficitPercentageOptimal: (optimalDeficit / tdee) * 100,
+    deficitPercentageFast: 37.8, // из расчетов
     muscleLossPercentageOptimal, muscleLossPercentageFast,
     totalMuscleLossOptimal, totalMuscleLossFast,
-    weeklyOptimalDeficitWithRefeed,
+    weeklyDeficitWithRefeed,
     daysToGoalWithRefeed, weeksToGoalWithRefeed,
     dietBreakWeeks, totalWeeksWithBreaks,
     chronobiologyImprovement, improvedWeeksToGoal,
@@ -342,7 +376,7 @@ const ScientificCalorieCalculator = () => {
     <div className="w-full max-w-[1200px] mx-auto space-y-6 px-4 sm:px-6">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-xl md:text-2xl text-center">Научно обоснованный калькулятор калорий для похудения</CardTitle>
+          <CardTitle className="text-xl md:text-2xl text-center">Научно обоснованный калькулятор питания и тренировок</CardTitle>
           <CardDescription className="text-center">
             Расчеты основаны на современных научных исследованиях в области диетологии и метаболизма
           </CardDescription>
@@ -373,7 +407,9 @@ const ScientificCalorieCalculator = () => {
               <Tabs defaultValue="main">
                 <TabsList className="flex flex-wrap gap-1 w-full rounded-md md:grid md:grid-cols-5">
                   <TabsTrigger value="main" className="flex-1 min-w-[48%] text-xs sm:text-sm">Основные рекомендации</TabsTrigger>
-                  <TabsTrigger value="progress" className="flex-1 min-w-[48%] text-xs sm:text-sm">Прогноз снижения веса</TabsTrigger>
+                  <TabsTrigger value="progress" className="flex-1 min-w-[48%] text-xs sm:text-sm">
+                    {weightGoal === 'loss' ? 'Прогноз снижения веса' : 'Прогноз набора веса'}
+                  </TabsTrigger>
                   <TabsTrigger value="nutrition" className="flex-1 min-w-[48%] text-xs sm:text-sm">Макронутриенты</TabsTrigger>
                   <TabsTrigger value="training" className="flex-1 min-w-[48%] text-xs sm:text-sm">Тренировки</TabsTrigger>
                   <TabsTrigger value="lifestyle" className="flex-1 min-w-[48%] text-xs sm:text-sm">Образ жизни</TabsTrigger>

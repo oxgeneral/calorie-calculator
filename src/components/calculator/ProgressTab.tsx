@@ -26,108 +26,73 @@ const ProgressTab: React.FC<ProgressTabProps> = ({ data }) => {
     muscleLossData,
     weeksToGoalWithRefeed,
     improvedWeeksToGoal,
-    weightToLose
+    weightToLose,
+    weightGoal
   } = data;
 
   return (
     <div className="space-y-6">
-      <div className="w-full h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={trajectoryData}
-            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis 
-              dataKey="week" 
-              label={{ value: 'Недели', position: 'insideBottomRight', offset: -5, fill: '#fff' }}
-              tick={{ fill: '#fff', fontSize: 11 }}
-            />
-            <YAxis 
-              domain={[(targetWeight ?? DEFAULT_VALUES.targetWeight) - 1, (currentWeight ?? DEFAULT_VALUES.currentWeight) + 1]} 
-              label={{ value: 'Вес (кг)', angle: -90, position: 'insideLeft', fill: '#fff' }}
-              tick={{ fill: '#fff', fontSize: 11 }}
-            />
-            <Tooltip 
-              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '4px' }}
-              labelStyle={{ color: '#fff' }}
-              itemStyle={{ color: '#fff' }}
-            />
-            <Legend wrapperStyle={{ color: '#fff' }} />
-            <Line 
-              type="monotone" 
-              dataKey="scientific" 
-              name="Научный подход" 
-              stroke="#4CAF50" 
-              activeDot={{ r: 8 }} 
-              strokeWidth={2}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="fast" 
-              name="Быстрый подход" 
-              stroke="#F44336" 
-              activeDot={{ r: 8 }} 
-              strokeWidth={2}
-              strokeDasharray="5 5"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-      
-      <div className="w-full h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={muscleLossData}
-            margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-            <XAxis 
-              dataKey="name" 
-              tick={{ fill: '#fff', fontSize: 11 }}
-            />
-            <YAxis 
-              tick={{ fill: '#fff', fontSize: 11 }}
-              label={{ value: 'Килограммы', angle: -90, position: 'insideLeft', fill: '#fff' }}
-            />
-            <Tooltip 
-              contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '4px' }}
-              labelStyle={{ color: '#fff' }}
-              itemStyle={{ color: '#fff' }}
-            />
-            <Legend wrapperStyle={{ color: '#fff' }} />
-            <Bar 
-              dataKey="fat" 
-              name="Потеря жира" 
-              stackId="a" 
-              fill="#4CAF50" 
-            />
-            <Bar 
-              dataKey="muscle" 
-              name="Потеря мышц" 
-              stackId="a" 
-              fill="#F44336" 
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      
-      <div className="p-4 rounded-lg bg-white/10">
-        <h3 className="text-lg font-medium mb-3 text-white text-center">Сроки достижения цели</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-white/5 rounded text-center">
-            <div className="text-sm text-white/70 mb-1">Научный подход</div>
-            <div className="text-xl font-bold text-white">{Math.round(weeksToGoalWithRefeed)} недель</div>
-            <div className="text-sm text-white/70 mt-1">
-              <span className="text-green-400">{totalMuscleLossOptimal.toFixed(1)} кг</span> потери мышц
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <h3 className="text-lg font-medium mb-3">
+            {weightGoal === 'loss' ? 'Прогноз снижения веса' : 'Прогноз набора веса'}
+          </h3>
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trajectoryData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" tick={{fontSize: 11}} />
+                <YAxis 
+                  domain={[
+                    (targetWeight ?? DEFAULT_VALUES.targetWeight) - 1, 
+                    (currentWeight ?? DEFAULT_VALUES.currentWeight) + 1
+                  ]} 
+                  tick={{fontSize: 11}} 
+                />
+                <Tooltip />
+                <Legend wrapperStyle={{fontSize: 11}} />
+                <Line 
+                  type="monotone" 
+                  dataKey="scientific" 
+                  name="Научный подход с рефидами" 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  activeDot={{ r: 8 }} 
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="fast" 
+                  name={weightGoal === 'loss' ? 'Быстрый подход (-1000 ккал)' : 'Быстрый подход (+1000 ккал)'}
+                  stroke="#f87171" 
+                  strokeDasharray="5 5"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-          <div className="p-3 bg-white/5 rounded text-center">
-            <div className="text-sm text-white/70 mb-1">Быстрый подход</div>
-            <div className="text-xl font-bold text-white">{Math.round(weeksToGoalWithRefeed * 0.7)} недель</div>
-            <div className="text-sm text-white/70 mt-1">
-              <span className="text-red-400">{totalMuscleLossFast.toFixed(1)} кг</span> потери мышц
-            </div>
+          <div className="text-xs sm:text-sm text-gray-600 mt-2">
+            * График учитывает адаптивный термогенез, периодизацию диеты и диетические перерывы
+          </div>
+        </div>
+        
+        <div>
+          <h3 className="text-lg font-medium mb-3">
+            {weightGoal === 'loss' ? 'Состав потери веса' : 'Состав набора веса'}
+          </h3>
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={muscleLossData} stackOffset="expand" layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={(value: number) => `${(value*100).toFixed(0)}%`} tick={{fontSize: 11}} />
+                <YAxis type="category" dataKey="name" width={100} tick={{fontSize: 11}} />
+                <Tooltip formatter={(value: number) => `${value.toFixed(1)} кг`} />
+                <Legend wrapperStyle={{fontSize: 11}} />
+                <Bar dataKey="fat" name="Жировая ткань" stackId="a" fill="#10b981" />
+                <Bar dataKey="muscle" name="Мышечная ткань" stackId="a" fill="#f87171" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="text-xs sm:text-sm text-gray-600 mt-2">
+            * На основе научных данных о сохранении мышечной массы при разных дефицитах калорий
           </div>
         </div>
       </div>
@@ -154,55 +119,29 @@ const ProgressTab: React.FC<ProgressTabProps> = ({ data }) => {
           )}
         </ul>
       </div>
-      
-      <div className="mt-2 p-3 sm:p-4 bg-purple-50 rounded-md border border-purple-200">
-        <h3 className="text-lg font-medium mb-2">Стратегия долгосрочного поддержания веса:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <h4 className="font-medium mb-2 text-sm sm:text-base">Фаза перехода (2-4 недели)</h4>
-            <ul className="list-disc pl-4 sm:pl-5 text-xs sm:text-sm space-y-1">
-              <li>Постепенное увеличение калорий на 100 ккал каждую неделю</li>
-              <li>Продолжение силовых тренировок на прежнем уровне</li>
-              <li>Мониторинг веса: допустимы колебания ±1 кг</li>
-              <li>Постепенное расширение окна питания при необходимости</li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-medium mb-2 text-sm sm:text-base">Фаза поддержания (минимум 6 месяцев)</h4>
-            <ul className="list-disc pl-4 sm:pl-5 text-xs sm:text-sm space-y-1">
-              <li>Ежедневное потребление на уровне нового TDEE</li>
-              <li>Отслеживание еженедельного среднего веса</li>
-              <li>Корректировка калорий при изменении веса {'>'} 2 кг</li>
-              <li>{gender === 'female' ? 'Учет фаз цикла при оценке веса и приеме пищи' : 'Периодизация тренировок и питания'}</li>
-              <li>Поддержание высокого потребления белка ({gender === 'female' ? '1.6' : '1.8'} г/кг)</li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-medium mb-2 text-sm sm:text-base">Долгосрочный успех (годы)</h4>
-            <ul className="list-disc pl-4 sm:pl-5 text-xs sm:text-sm space-y-1">
-              <li>Формирование устойчивых привычек в питании</li>
-              <li>Регулярная физическая активность 4-5 раз в неделю</li>
-              <li>Еженедельные "гибкие" приемы пищи вместо строгих ограничений</li>
-              <li>Регулярный сон 7-9 часов</li>
-              <li>Управление стрессом через медитацию, дыхательные техники</li>
-              <li>Социальная поддержка и новая самоидентификация</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="mt-2 p-3 sm:p-4 bg-green-50 rounded-md border border-green-200">
-        <h3 className="text-lg font-medium mb-2">Научные факты о долгосрочном снижении веса:</h3>
-        <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-xs sm:text-sm">
-          <li><strong>Данные регистра успешного снижения веса:</strong> Люди, которые успешно поддерживают вес более 5 лет, имеют схожие привычки, независимо от пола</li>
-          <li><strong>Самоконтроль:</strong> 75% успешно похудевших взвешиваются минимум раз в неделю</li>
-          <li><strong>Физическая активность:</strong> В среднем 60-90 минут умеренной активности ежедневно для долгосрочного поддержания веса</li>
-          <li><strong>Завтрак:</strong> 78% успешно похудевших регулярно завтракают 7 дней в неделю</li>
-          <li><strong>Строгость диеты:</strong> Умеренная в будни, более гибкая в выходные (модель "80/20")</li>
-          {gender === 'female' && <li><strong>Для женщин важнее:</strong> Социальная поддержка и управление эмоциональным питанием играют ключевую роль</li>}
-          {gender === 'male' && <li><strong>Для мужчин важнее:</strong> Конкретные цели и регулярная оценка прогресса повышают вероятность успеха</li>}
+
+      <div className="mt-2 p-3 sm:p-4 bg-amber-50 rounded-md border border-amber-200">
+        <h3 className="text-lg font-medium mb-2">Научные факты о {weightGoal === 'loss' ? 'долгосрочном поддержании веса' : 'наборе мышечной массы'}:</h3>
+        <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-sm sm:text-base">
+          {weightGoal === 'loss' ? (
+            // Факты о поддержании веса
+            <>
+              <li><strong>Самоконтроль и мониторинг:</strong> Люди, поддерживающие вес более 5 лет, взвешиваются минимум 1 раз в неделю и ведут дневник питания</li>
+              <li><strong>Физическая активность:</strong> 90% успешных случаев поддержания веса связаны с 3-5 часами умеренной активности в неделю</li>
+              <li><strong>Регулярный завтрак:</strong> 78% людей, поддерживающих потерю веса, завтракают каждый день</li>
+              <li><strong>Гибкость диеты:</strong> Жесткие ограничения повышают риск срывов на 60%, тогда как гибкая модель повышает успех на 39%</li>
+              <li><strong>Гендерные различия:</strong> {gender === 'female' ? 'Для женщин ключевым фактором успеха является социальная поддержка' : 'Для мужчин важнейшим фактором является постановка конкретных достижимых целей'}</li>
+            </>
+          ) : (
+            // Факты о наборе мышечной массы
+            <>
+              <li><strong>Темпы роста мышц:</strong> Новички могут набирать до 1-1.5% массы тела в месяц, опытные атлеты - всего 0.25-0.5%</li>
+              <li><strong>Белок и синтез мышц:</strong> Распределение 20-40г белка по 4-5 приемам пищи стимулирует синтез на 25% эффективнее</li>
+              <li><strong>Влияние сна:</strong> Недостаток сна (менее 6 часов) снижает синтез мышечного белка на 18-25% и повышает катаболизм</li>
+              <li><strong>Прогрессивная перегрузка:</strong> Увеличение нагрузки на 2.5-5% каждые 1-2 недели оптимально стимулирует гипертрофию</li>
+              <li><strong>Гендерные различия:</strong> {gender === 'female' ? 'Женщины могут тренироваться с большей частотой благодаря лучшему восстановлению и имеют преимущество в темпах роста нижней части тела' : 'Мужчины имеют преимущество в росте верхней части тела благодаря большей концентрации андрогенных рецепторов'}</li>
+            </>
+          )}
         </ul>
       </div>
     </div>
