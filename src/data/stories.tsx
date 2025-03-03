@@ -32,6 +32,9 @@ const generateMockData = () => {
     activityLevel: 'moderate' as const,
     dietType: 'standard' as const,
     
+    // Цель по весу
+    weightGoal: 'loss' as const,
+    
     // Рассчитанные значения
     bmr: 2100,
     tdee: 2900,
