@@ -121,12 +121,12 @@ const NutritionTab: React.FC<NutritionTabProps> = ({ data }) => {
         </div>
       </div>
       
-      <div className="p-4 rounded-lg bg-white/10">
+      <div className="p-4 rounded-lg bg-gray-800">
         <h3 className="text-lg font-medium mb-3 text-white text-center">Научные рекомендации</h3>
-        <ul className="space-y-3 text-white/80">
+        <ul className="space-y-3 text-white">
           <li className="flex items-start">
             <span className="text-green-400 mr-2">•</span> 
-            <span>Белок: <strong>{dailyProteinGrams/optimalIntake*100}%</strong> от общей калорийности</span>
+            <span>Белок: <strong>{Math.round(proteinCalories/optimalIntake*100)}%</strong> от общей калорийности</span>
           </li>
           <li className="flex items-start">
             <span className="text-blue-400 mr-2">•</span> 
