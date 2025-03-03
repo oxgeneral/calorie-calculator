@@ -264,8 +264,8 @@ const ScientificCalorieCalculator = () => {
   }
   
   // График прогресса с учетом цели
-  const weeklyDeficitWithRefeed = (Math.abs(optimalDeficit) * 6 + 0) / 7; // Модуль, т.к. может быть отрицательным для набора
-  const daysToGoalWithRefeed = Math.round((absWeightChange * scientificCaloriesPerKg) / weeklyDeficitWithRefeed);
+  const weeklyOptimalDeficitWithRefeed = (Math.abs(optimalDeficit) * 6 + 0) / 7; // Модуль, т.к. может быть отрицательным для набора
+  const daysToGoalWithRefeed = Math.round((absWeightChange * scientificCaloriesPerKg) / weeklyOptimalDeficitWithRefeed);
   const weeksToGoalWithRefeed = Math.round(daysToGoalWithRefeed / 7);
   
   // Диетические перерывы
@@ -278,7 +278,7 @@ const ScientificCalorieCalculator = () => {
   
   const generateTrajectoryData = () => {
     const weeks = totalWeeksWithBreaks + 2;
-    const weeklyChange = (weeklyDeficitWithRefeed * 7) / scientificCaloriesPerKg;
+    const weeklyChange = (weeklyOptimalDeficitWithRefeed * 7) / scientificCaloriesPerKg;
     const weeklyChangeFast = (weightGoal === 'loss' ? 1000 : -1200) * 7 / scientificCaloriesPerKg;
     
     const direction = weightGoal === 'loss' ? -1 : 1; // -1 для похудения, +1 для набора
@@ -359,7 +359,7 @@ const ScientificCalorieCalculator = () => {
     deficitPercentageFast: 37.8, // из расчетов
     muscleLossPercentageOptimal, muscleLossPercentageFast,
     totalMuscleLossOptimal, totalMuscleLossFast,
-    weeklyDeficitWithRefeed,
+    weeklyOptimalDeficitWithRefeed,
     daysToGoalWithRefeed, weeksToGoalWithRefeed,
     dietBreakWeeks, totalWeeksWithBreaks,
     chronobiologyImprovement, improvedWeeksToGoal,
