@@ -125,7 +125,8 @@ const ScientificCalorieCalculator = () => {
   
   // Расчеты для графиков
   const safeTargetWeight = targetWeight ?? DEFAULT_VALUES.targetWeight;
-  const weightToLose = currentWeight - safeTargetWeight;
+  const safeCurrentWeight = currentWeight ?? DEFAULT_VALUES.currentWeight;
+  const weightToLose = safeCurrentWeight - safeTargetWeight;
   const weightGoal = weightToLose > 0 ? 'loss' : 'gain'; // Определяем цель - потеря или набор веса
   const absWeightChange = Math.abs(weightToLose);
   const scientificCaloriesPerKg = 8800;
@@ -144,9 +145,6 @@ const ScientificCalorieCalculator = () => {
     optimalDeficit = Math.round(tdee * (optimalDeficitPercentage / 100));
     optimalIntake = tdee - optimalDeficit; // При отрицательном дефиците получаем профицит
   }
-  
-  // Обеспечиваем безопасность от null значений
-  const safeCurrentWeight = currentWeight ?? DEFAULT_VALUES.currentWeight;
   
   // Макронутриенты - корректировка с учетом пола и типа диеты
   // Мужчинам и женщинам требуется разное количество белка для сохранения мышечной массы
