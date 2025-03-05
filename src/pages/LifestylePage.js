@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from '../components/Layout';
 import { useAppContext } from '../context/AppContext';
 import { Doughnut } from 'react-chartjs-2';
@@ -24,26 +24,7 @@ ChartJS.register(
   Title
 );
 
-// Компонент для отображения карточки с рекомендациями
-const LifestyleCard = ({ title, recommendations, icon, className = '' }) => {
-  return (
-    <div className={`bg-white rounded-lg shadow-md p-4 mb-4 ${className}`}>
-      <div className="flex items-center mb-3">
-        <div className="flex-shrink-0 mr-3 text-primary">
-          {icon}
-        </div>
-        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-      </div>
-      <ul className="list-disc pl-5 space-y-2">
-        {recommendations.map((rec, index) => (
-          <li key={index} className="text-gray-700">{rec}</li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-// Компонент карточки с заголовком и содержимым
+// Компонент для отображения карточки с заголовком и содержимым
 const InfoCard = ({ title, content, icon }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mb-4">
@@ -217,8 +198,6 @@ const LifestylePage = () => {
   // Определяем параметры пользователя
   const gender = state.gender === 'male' ? 'male' : 'female';
   const weightLossGoal = state.weightLossGoal;
-  const genderText = gender === 'male' ? 'мужчин' : 'женщин';
-  const goalType = weightLossGoal ? 'снижения веса' : 'набора массы';
   
   // Расчет рекомендуемого потребления воды
   const waterPerDay = (state.currentWeight * 0.033).toFixed(1);

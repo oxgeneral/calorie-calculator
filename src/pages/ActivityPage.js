@@ -23,35 +23,6 @@ ChartJS.register(
   Legend
 );
 
-// Компонент для отображения тренировки
-const WorkoutCard = ({ title, description, frequency, intensity, icon }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <div className="flex items-center mb-3">
-        <div className="flex-shrink-0 mr-3 text-primary">
-          {icon}
-        </div>
-        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-      </div>
-      <p className="text-gray-700 mb-3">{description}</p>
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <div className="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>{frequency}</span>
-        </div>
-        <div className="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span>{intensity}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Компонент карточки дня тренировки
 const TrainingDayCard = ({ day, title, description, color }) => {
   // Определяем класс цвета фона карточки
