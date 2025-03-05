@@ -23,7 +23,7 @@ const initialState = {
   },
   
   // Текущий активный экран
-  activeScreen: 'settings',
+  activeScreen: 'start',
   
   // Результаты расчетов
   weightLossGoal: false, // true - похудение, false - набор массы

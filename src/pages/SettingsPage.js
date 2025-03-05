@@ -63,6 +63,19 @@ const SettingsPage = () => {
   return (
     <Layout title="Рассчет программы">
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Описание страницы настроек */}
+        <div className="bg-blue-50 p-4 rounded-lg shadow-sm mb-6">
+          <h2 className="text-lg font-semibold text-primary mb-2">О настройках</h2>
+          <p className="text-gray-700 mb-2">
+            Здесь вы можете указать свои персональные данные для точного расчета 
+            индивидуальной программы питания и тренировок.
+          </p>
+          <p className="text-gray-700">
+            На основе введенных параметров система создаст для вас персонализированные 
+            рекомендации, соответствующие вашим целям и физиологическим особенностям.
+          </p>
+        </div>
+        
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-primary">Личные данные</h2>
           
