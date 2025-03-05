@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppContext } from './context/AppContext';
+import { useAppContext, AppProvider } from './context/AppContext';
 
 // Импорт страниц
 import SettingsPage from './pages/SettingsPage';
@@ -40,9 +40,11 @@ const AppRouter = () => {
 
 function App() {
   return (
-    <div className="App">
-      <AppRouter />
-    </div>
+    <AppProvider>
+      <div className="App">
+        <AppRouter />
+      </div>
+    </AppProvider>
   );
 }
 
