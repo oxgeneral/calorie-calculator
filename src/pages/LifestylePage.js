@@ -308,19 +308,29 @@ const LifestylePage = () => {
     <Layout title="Рекомендации по образу жизни">
       <div className="p-4 space-y-6">
         {/* Блок "Термический эффект пищи" */}
-        <InfoCard title="Термический эффект пищи (TEF)">
-          <p className="mb-3">
-            Термический эффект пищи — это энергия, которую организм тратит на переваривание, усвоение и обработку потребляемых вами продуктов. Разные макронутриенты имеют разный термический эффект: белки требуют больше всего энергии (20-30% калорий), углеводы меньше (5-10%), жиры наименьше (0-3%).
-          </p>
-          <div className="flex justify-center">
-            <div className="w-full max-w-md">
-              <TEFChart data={tefData} />
+        <InfoCard 
+          title="Термический эффект пищи (TEF)"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          }
+          content={
+            <div>
+              <p className="mb-3">
+                Термический эффект пищи — это энергия, которую организм тратит на переваривание, усвоение и обработку потребляемых вами продуктов. Разные макронутриенты имеют разный термический эффект: белки требуют больше всего энергии (20-30% калорий), углеводы меньше (5-10%), жиры наименьше (0-3%).
+              </p>
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <TEFChart data={tefData} />
+                </div>
+              </div>
+              <div className="mt-3 text-center text-gray-700">
+                <strong>Общий термический эффект:</strong> {totalTEF} ккал/день
+              </div>
             </div>
-          </div>
-          <div className="mt-3 text-center text-gray-700">
-            <strong>Общий термический эффект:</strong> {totalTEF} ккал/день
-          </div>
-        </InfoCard>
+          }
+        />
         
         {/* Хронобиология питания */}
         <InfoCard
